@@ -42,4 +42,5 @@
 }
 .COPYABLE-HTML {
   visibility: hidden;
+  position: absolute;
 }
