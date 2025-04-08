@@ -1,22 +1,26 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Papa from "papaparse";
 import "./App.css";
 
 function App() {
   const [contacts, setContacts] = useState([]);
+  const csvUrl =
+    "https://docs.google.com/spreadsheets/d/e/2PACX-1vSun0Mvi7qSCmrmtGq5jY-ZlUC2sIVt8W-wSZrbzRC0xrQAx06zoODN1LcIYHOPdQcoQOlGxBXrf6sF/pub?output=csv";
 
-  const handleFileChange = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      Papa.parse(file, {
-        header: true,
-        skipEmptyLines: true,
-        complete: function (results) {
-          setContacts(results.data);
-        },
-      });
-    }
-  };
+  useEffect(() => {
+    Papa.parse(csvUrl, {
+      download: true, // Required to fetch the file from the URL
+      header: true,
+      skipEmptyLines: true,
+      complete: function (results) {
+        setContacts(results.data);
+      },
+      error: function (error) {
+        console.error("Error fetching or parsing CSV:", error);
+        alert("Failed to load data from the URL.");
+      },
+    });
+  }, []); // Empty dependency array ensures this runs only once on mount
 
   function nl2br(text) {
     // Split the text on new lines and filter out empty strings if they exist
@@ -41,12 +45,6 @@ function App() {
 
   return (
     <div className="App">
-      {contacts.length === 0 && (
-        <>
-          <h1>Upload CSV File</h1>
-          <input type="file" accept=".csv" onChange={handleFileChange} />
-        </>
-      )}
       {contacts.length > 0 && (
         <button onClick={copyHtmlContent}>Copy HTML</button>
       )}
